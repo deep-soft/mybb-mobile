@@ -45,6 +45,7 @@ jobs:
         uses: deep-soft/checkout@v4
 
       - name: Get ref, set build version
+        continue-on-error: true
         shell: bash
         run: |
           _ref_all_=$(git log -1 --format='%H')
@@ -52,10 +53,13 @@ jobs:
           _ref_org_=${{ env.TAG_REF }}
           _ref_len_="${#_ref_org_}"
           _ref_=$(echo ${_ref_all_::$_ref_len_})
-          _prg_version_=$(grep "versionName " "app/build.gradle" | awk -F '= ' '{print $2}' | awk -F '"' '{print $2}')
-          _prg_ver_suf_=$(grep "versionNameSuffix " "app/build.gradle" | awk -F '= ' '{print $2}' | awk -F '"' '{print $2}')
+          _prg_version_=$(grep "versionName " "app/build.gradle" | awk -F ' ' '{print $2}' | awk -F '"' '{print $2}')
+          _prg_ver_suf_=$(grep "versionNameSuffix " "app/build.gradle" | awk -F ' ' '{print $2}' | awk -F '"' '{print $2}')
           echo "TAG_REF=$_ref_" >> $GITHUB_ENV
           _build_=${{ env.TAG_BUILD }}.$_ref_
+          echo "TAG_BUILD=$_build_"
+          echo "PRG_VERSION=$_prg_version_$_prg_ver_suf_"
+          echo "TAG_VERSION=$_prg_version_$_prg_ver_suf_"
           echo "TAG_BUILD=$_build_" >> $GITHUB_ENV
           echo "PRG_VERSION=$_prg_version_$_prg_ver_suf_" >> $GITHUB_ENV
           echo "TAG_VERSION=$_prg_version_$_prg_ver_suf_" >> $GITHUB_ENV
